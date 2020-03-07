@@ -1,4 +1,4 @@
 *
-!target/*-runner
-!target/*-runner.jar
-!target/lib/*
+!employee-management/target/*-runner
+!employee-management/target/*-runner.jar
+!employee-management/target/lib/*

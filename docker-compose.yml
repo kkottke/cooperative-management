@@ -1,0 +1,45 @@
+version: "3.7"
+
+services:
+  # Database container
+  db:
+    container_name: cooperative-db
+    hostname: cooperative-db
+    image: "postgres"
+    environment:
+      - POSTGRES_PASSWORD=very_secret
+    ports:
+      - 5432:5432
+    # Healthcheck to confirm availability of DB.
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    # Internal network for the containers
+    networks:
+      - cooperative-net
+
+  # Employee Management container
+  employee-management:
+    container_name: employee-management
+    hostname: employee-management
+    image: kkottke/employee-management
+    environment:
+#      - QUARKUS_DATASOURCE_URL=jdbc:postgresql://cooperative-db:5432/postgres
+      - WAIT_HOSTS=db:5432
+      - WAIT_HOSTS_TIMEOUT=20
+      - WAIT_SLEEP_INTERVAL=1
+      - WAIT_BEFORE_HOSTS=1
+    ports:
+      - 8080:8080
+    depends_on:
+      - db
+    restart: on-failure
+    command: sh -c "./wait && ./application -Dquarkus.http.host=0.0.0.0"
+    # Internal network for the containers
+    networks:
+      - cooperative-net
+
+networks:
+  cooperative-net:
