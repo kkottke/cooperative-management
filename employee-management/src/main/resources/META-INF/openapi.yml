@@ -1,0 +1,121 @@
+openapi: 3.0.3
+
+info:
+  title: Employee API
+  version: "1.0"
+
+tags:
+  - name: Employee
+
+paths:
+  /employees:
+    get:
+      summary: Returns a list of all employees (maybe filtered by position).
+      operationId: listEmployees
+      tags:
+        - Employee
+      parameters:
+        - name: position
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Employee'
+    post:
+      summary: Create/Persist an employee.
+      operationId: addEmployee
+      tags:
+        - Employee
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Employee'
+      responses:
+        '201':
+          description: Employee has been created successfully
+          headers:
+            Location:
+              description: Link to the created employee
+              schema:
+                type: string
+        '400':
+          description: Request body not well formatted
+
+  /employees/{id}:
+    get:
+      summary: Returns employee with the given id.
+      operationId: getEmployee
+      tags:
+        - Employee
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Successful operation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Employee'
+        '401':
+          description: Requested resource could not be found.
+    delete:
+      summary: Removes a specific employee.
+      operationId: deleteEmployee
+      tags:
+        - Employee
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The id of the employee to remove.
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Employee has been removed successfully.
+
+components:
+  schemas:
+    Position:
+      type: string
+      enum:
+        - SENIOR_SOFTWARE_ARCHITECT
+        - SENIOR_SOFTWARE_ENGINEER
+        - SOFTWARE_ARCHITECT
+        - SOFTWARE_ENGINEER
+    Employee:
+      type: object
+      properties:
+        firstName:
+          type: string
+          nullable: false
+        lastName:
+          type: string
+          nullable: false
+        position:
+          $ref: '#/components/schemas/Position'
+          nullable: false
+      required:
+        - firstName
+        - lastName
+        - position
+      example:
+        firstName: John
+        lastName: Doe
+        position: SOFTWARE_ARCHITECT
