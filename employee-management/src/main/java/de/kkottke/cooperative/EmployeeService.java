@@ -1,35 +1,43 @@
 package de.kkottke.cooperative;
 
 import de.kkottke.cooperative.modell.Employee;
+import de.kkottke.cooperative.modell.Position;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 
 @ApplicationScoped
 public class EmployeeService {
 
-    private final EntityManager em;
+    private final EmployeeRepository repository;
 
     @Inject
-    public EmployeeService(final EntityManager em) {
-        this.em = em;
+    public EmployeeService(final EmployeeRepository repository) {
+        this.repository = repository;
     }
 
     public List<Employee> listEmployees() {
-        CriteriaQuery<Employee> query = em.getCriteriaBuilder().createQuery(Employee.class);
-        Root<Employee> rootEntry = query.from(Employee.class);
-        CriteriaQuery<Employee> allQuery = query.select(rootEntry);
+        return repository.listAll();
+    }
 
-        return em.createQuery(allQuery).getResultList();
+    public Optional<Employee> findById(long id) {
+        return Optional.ofNullable(repository.findById(id));
+    }
+
+    public List<Employee> findByPosition(Position position) {
+        return repository.findByPosition(position);
     }
 
     @Transactional
     public void addEmployee(final Employee employee) {
-        em.persist(employee);
+        repository.persist(employee);
+    }
+
+    @Transactional
+    public void deleteEmployee(long id) {
+        repository.delete("id", id);
     }
 }

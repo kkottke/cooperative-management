@@ -1,7 +1,7 @@
 package de.kkottke.cooperative.modell;
 
+import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import io.quarkus.runtime.annotations.RegisterForReflection;
-import lombok.Data;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -11,20 +11,19 @@ import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "employee")
-@Data
 @RegisterForReflection
-public class Employee {
+public class Employee extends PanacheEntityBase {
 
     @Id
     @GeneratedValue
-    private long id;
+    public long id;
 
     @NotNull
-    private String firstName;
+    public String firstName;
 
     @NotNull
-    private String lastName;
+    public String lastName;
 
     @NotNull
-    private Position position;
+    public Position position;
 }
